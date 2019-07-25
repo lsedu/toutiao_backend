@@ -45,7 +45,7 @@ def upload_test(file_data):
     access_key = 'vvWChY25izwlROAKIHCTCvRcWxFST0lU7rJ9VAO0'
     secret_key = 'txfv38R8rX4lYh0KeB-ZBSLxHlXlU1zJbA730Rhm'
     # 要上传的空间
-    bucket_name = 'my_toutiao01'
+    bucket_name = 'img02'
     # 构建鉴权对象
     q = Auth(access_key, secret_key)
 
@@ -69,4 +69,4 @@ if __name__ == '__main__':
 
         ret=upload_test(file_data)
 
-        print('http://puw2c37bg.bkt.clouddn.com/%s'%(ret))
+        print('http://puxgejinx.bkt.clouddn.com/%s'%(ret))

@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import grpc
 from elasticsearch5 import Elasticsearch
 # import socketio
+from toutiao.schedule.statistic import fix_statistic
 
 
 def create_flask_app(config, enable_config_file=False):
@@ -76,8 +77,24 @@ def create_app(config, enable_config_file=False):
 
     # MySQL数据库连接初始化
     from models import db
-
     db.init_app(app)
+
+    #定时任务：
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from apscheduler.executors.pool import ThreadPoolExecutor
+    #定时任务添加在线程池中执行
+    executors={
+        'default':ThreadPoolExecutor(10)
+    }
+    #创建APS对象，要在Flask应用程序中使用，所以选择Background的方式来创建
+    app.scheduler = BackgroundScheduler(executors=executors)
+    #添加定时任务：app.scheduler.add_job('func','计时方式')
+    app.scheduler.add_job(fix_statistic,"cron",hour="3") #cron周期性，每天三点
+
+    #运行
+    app.scheduler.start()
+
+
 
     # # 添加请求钩子
     from utils.middlewares import jwt_authentication
@@ -99,5 +116,5 @@ def create_app(config, enable_config_file=False):
     from .resources.search import search_bp
     app.register_blueprint(search_bp)
 
-    return app
+
 

@@ -48,7 +48,7 @@ class AuthorizationResource(Resource):
         'put': [set_db_to_read]
     }
 
-    def _generate_tokens(self, user_id, refresh=False):  #refresh默认值为False
+    def _generate_tokens(self, user_id, refresh=True):  #refresh默认值为True
         """
         生成token 和refresh_token
         :param user_id: 用户id
@@ -59,6 +59,7 @@ class AuthorizationResource(Resource):
         expiry =datetime.utcnow() + timedelta( hours= current_app.config["JWT_EXPIRY_HOURS"])  #current_app 获取属性
         token =generate_jwt({"user_id":user_id},expiry,secret)
         #TODO 判断是否需要刷新token，优化功能，减少无用功
+        #生成refresh_token
         if refresh:
             refresh_expiry = datetime.utcnow() + timedelta(days=current_app.config["JWT_REFRESH_DAYS"])
             refresh_token = generate_jwt({"user_id":user_id,"is_refresh":True},refresh_expiry,secret)
@@ -80,7 +81,7 @@ class AuthorizationResource(Resource):
         code = args.code
 
         # 从redis中获取验证码
-        key = 'app:code:{}'.format(mobile)
+        key = 'app:code:{}'.format(mobile)  #在哪里生成验证码，过期时间：
         try:
             real_code = current_app.redis_master.get(key)
         except ConnectionError as e:

@@ -43,8 +43,8 @@ user_api.add_resource(passport.AuthorizationResource, '/v1_0/authorizations',
 # user_api.add_resource(profile.UserResource, '/v1_0/users/<int(min=1):target>',
 #                       endpoint='User')
 #
-# user_api.add_resource(profile.CurrentUserResource, '/v1_0/user',
-#                       endpoint='CurrentUser')
+user_api.add_resource(profile.CurrentUserResource, '/v1_0/user',
+                      endpoint='CurrentUser')
 #
 # user_api.add_resource(profile.ProfileResource, '/v1_0/user/profile',
 #                       endpoint='Profile')
