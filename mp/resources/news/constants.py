@@ -1,0 +1,21 @@
+# 默认用户图片素材每页数量
+DEFAULT_IMAGE_PER_PAGE = 20
+DEFAULT_IMAGE_PER_PAGE_MAX = 50
+
+# 搜索结果分页默认每页数量 下限
+DEFAULT_SEARCH_PER_PAGE_MIN = 10
+
+# 搜索结果页默认每页数量 上限
+DEFAULT_SEARCH_PER_PAGE_MAX = 50
+
+# 文章分页默认每页数量 下限
+DEFAULT_ARTICLE_PER_PAGE_MIN = 10
+
+# 文章分页默认每页数量 上限
+DEFAULT_ARTICLE_PER_PAGE_MAX = 50
+
+# 评论分页默认每页数量 下限
+DEFAULT_COMMENT_PER_PAGE_MIN = 10
+
+# 评论分页默认每页数量 上限
+DEFAULT_COMMENT_PER_PAGE_MAX = 50

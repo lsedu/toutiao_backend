@@ -140,7 +140,7 @@ class Attitude(db.Model):
     id = db.Column('attitude_id', db.Integer, primary_key=True, doc='主键ID')
     user_id = db.Column(db.Integer, doc='用户ID')
     article_id = db.Column(db.Integer, db.ForeignKey('news_article_basic.article_id'), doc='文章ID')
-    attitude = db.Column(db.Boolean, doc='态度')
+    attitude = db.Column(db.Integer, doc='态度')
     ctime = db.Column('create_time', db.DateTime, default=datetime.now, doc='创建时间')
     utime = db.Column('update_time', db.DateTime, default=datetime.now, onupdate=datetime.now, doc='更新时间')
 

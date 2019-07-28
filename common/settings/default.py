@@ -6,41 +6,53 @@ class DefaultConfig(object):
     
     # 日志
     LOGGING_LEVEL = 'DEBUG'
-    LOGGING_FILE_DIR = '/home/python/logs'
+    LOGGING_FILE_DIR = '/Users/delron/Desktop/logs'
     LOGGING_FILE_MAX_BYTES = 300 * 1024 * 1024
     LOGGING_FILE_BACKUP = 10
 
     # flask-sqlalchemy使用的参数
     # SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1/toutiao'  # 数据库
     SQLALCHEMY_BINDS = {
-        'bj-m1': 'mysql://root:mysql@127.0.0.1:3306/toutiao',
-        'bj-s1': 'mysql://root:mysql@127.0.0.1:8306/toutiao',
-        'masters': ['bj-m1'],
-        'slaves': ['bj-s1'],
+        'bj-m1': 'mysql://root:mysql@127.0.0.1/toutiao',
+        'bj-m2': 'mysql://root:mysql@127.0.0.1/toutiao',
+        'bj-s1': 'mysql://root:mysql@127.0.0.1/toutiao',
+        'bj-s2': 'mysql://root:mysql@127.0.0.1/toutiao',
+        'masters': ['bj-m1', 'bj-m2'],
+        'slaves': ['bj-s1', 'bj-s2'],
         'default': 'bj-m1'
     }
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # 追踪数据的修改信号
     SQLALCHEMY_ECHO = True
 
+    # redis
+    # 原有redis配置
+    class REDIS:
+        SMS_CODE = 'redis://127.0.0.1:6379/0'
+        READING_HISTORY = 'redis://127.0.0.1:6379/1'
+        ARTICLE_CACHE = 'redis://127.0.0.1:6379/2'
+        USER_CACHE = 'redis://127.0.0.1:6379/3'
+        COMMENT_CACHE = 'redis://127.0.0.1:6379/4'
+        NOTICE_CACHE = 'redis://127.0.0.1:6379/5'
+
     # redis 哨兵
     REDIS_SENTINELS = [
-        ('127.0.0.1', '26380'),
-        ('127.0.0.1', '26381'),
-        ('127.0.0.1', '26382'),
+        ('172.17.0.133', '26380'),
+        ('172.17.0.135', '26380'),
+        ('172.17.0.136', '26380'),
     ]
     REDIS_SENTINEL_SERVICE_NAME = 'mymaster'
 
     # redis 集群
     REDIS_CLUSTER = [
-        {'host': '127.0.0.1', 'port': '7000'},
-        {'host': '127.0.0.1', 'port': '7001'},
-        {'host': '127.0.0.1', 'port': '7002'},
+        {'host': '172.17.0.133', 'port': '7000'},
+        {'host': '172.17.0.133', 'port': '7001'},
+        {'host': '172.17.0.133', 'port': '7002'},
     ]
 
     # 限流服务redis
     # RATELIMIT_STORAGE_URL = 'redis://127.0.0.1:6379/0'
-    RATELIMIT_STORAGE_URL = 'redis+sentinel://127.0.0.1:26380,127.0.0.1:26381,127.0.0.1:26382/mymaster'
+    RATELIMIT_STORAGE_URL = 'redis+sentinel://172.17.0.133:26380,172.17.0.135:26380,172.17.0.136:26380/mymaster'
     RATELIMIT_STRATEGY = 'moving-window'
     # RATELIMIT_DEFAULT = ['200/hour;1000/day']
 
@@ -50,13 +62,13 @@ class DefaultConfig(object):
     JWT_REFRESH_DAYS = 14
 
     # rpc
-    # class RPC:
-    #     RECOMMEND = '172.17.0.134:9999'
-    #     CHATBOT = '172.17.0.59:9999'
+    class RPC:
+        RECOMMEND = '172.17.0.134:9999'
+        CHATBOT = '172.17.0.59:9999'
 
     # ES
     ES = [
-        '127.0.0.1:9200'
+        '172.17.0.135:9200'
     ]
 
     QINIU_ACCESS_KEY = ''
@@ -64,7 +76,7 @@ class DefaultConfig(object):
     QINIU_BUCKET_NAME = ''
     QINIU_DOMAIN = 'http://toutiao.meiduo.site/'
 
-    RABBITMQ = 'amqp://python:rabbitmqpwd@localhost:5672/toutiao'
+    RABBITMQ = 'amqp://admin:rabbitmq@localhost:5672/delron'
 
     GEETEST_ID = ''
     GEETEST_KEY = ''
@@ -78,12 +90,17 @@ class DefaultConfig(object):
     WORKER_ID = 0
     SEQUENCE = 0
 
+    # 与推荐系统对接的kafka
+    KAFKA_SERVERS = [
+        '172.17.0.134:9092'
+    ]
+
 
 class CeleryConfig(object):
     """
     Celery默认配置
     """
-    broker_url = 'amqp://python:rabbitmqpwd@localhost:5672/toutiao'
+    broker_url = 'amqp://admin:rabbitmq@localhost:5672/delron'
 
     task_routes = {
         'sms.*': {'queue': 'sms'},

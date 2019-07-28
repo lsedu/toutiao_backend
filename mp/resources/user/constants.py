@@ -1,0 +1,16 @@
+
+# 根据手机号限制短信验证码发送频次
+LIMIT_SMS_VERIFICATION_CODE_BY_MOBILE = '1/minute'
+
+# 根据IP限制短信验证码发送频次
+LIMIT_SMS_VERIFICATION_CODE_BY_IP = '100/hour'
+
+# 短信验证码有效期, 秒
+SMS_VERIFICATION_CODE_EXPIRES = 5 * 60
+
+# GeeTest验证有效期
+GEETEST_EXPIRES = 5 * 60
+
+# 粉丝列表分页每页数量
+DEFAULT_FOLLOWER_PER_PAGE_MIN = 20
+DEFAULT_FOLLOWER_PER_PAGE_MAX = 50

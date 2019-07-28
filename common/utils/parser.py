@@ -3,10 +3,10 @@ import base64
 import imghdr
 from datetime import datetime
 
-# from cache import comment as cache_comment
-# from cache import channel as cache_channel
-# from cache import article as cache_article
-# from cache import user as cache_user
+from cache import comment as cache_comment
+from cache import channel as cache_channel
+from cache import article as cache_article
+from cache import user as cache_user
 
 
 def email(email_str):
@@ -53,91 +53,91 @@ def regex(pattern):
     return validate
 
 
-# def user_id(value):
-#     """
-#     检查是否是user_id
-#     :param value: 被检验的值
-#     :return: user_id
-#     """
-#     try:
-#         _user_id = int(value)
-#     except Exception:
-#         raise ValueError('Invalid target user id.')
-#     else:
-#         if _user_id <= 0:
-#             raise ValueError('Invalid target user id.')
-#         else:
-#             ret = cache_user.UserProfileCache(_user_id).exists()
-#             if ret:
-#                 return _user_id
-#             else:
-#                 raise ValueError('Invalid target user id.')
+def user_id(value):
+    """
+    检查是否是user_id
+    :param value: 被检验的值
+    :return: user_id
+    """
+    try:
+        _user_id = int(value)
+    except Exception:
+        raise ValueError('Invalid target user id.')
+    else:
+        if _user_id <= 0:
+            raise ValueError('Invalid target user id.')
+        else:
+            ret = cache_user.UserProfileCache(_user_id).exists()
+            if ret:
+                return _user_id
+            else:
+                raise ValueError('Invalid target user id.')
 
 
-# def article_id(value):
-#     """
-#     检查是否是article_id
-#     :param value: 被检验的值
-#     :return: article_id
-#     """
-#     try:
-#         _article_id = int(value)
-#     except Exception:
-#         raise ValueError('Invalid target article id.')
-#     else:
-#         if _article_id <= 0:
-#             raise ValueError('Invalid target article id.')
-#         else:
-#             ret = cache_article.ArticleInfoCache(_article_id).exists()
-#             if ret:
-#                 return _article_id
-#             else:
-#                 raise ValueError('Invalid target article id.')
+def article_id(value):
+    """
+    检查是否是article_id
+    :param value: 被检验的值
+    :return: article_id
+    """
+    try:
+        _article_id = int(value)
+    except Exception:
+        raise ValueError('Invalid target article id.')
+    else:
+        if _article_id <= 0:
+            raise ValueError('Invalid target article id.')
+        else:
+            ret = cache_article.ArticleInfoCache(_article_id).exists()
+            if ret:
+                return _article_id
+            else:
+                raise ValueError('Invalid target article id.')
 
 
-# def comment_id(value):
-#     """
-#     检查是否是评论id
-#     :param value: 被检验的值
-#     :return: comment_id
-#     """
-#     try:
-#         _comment_id = int(value)
-#     except Exception:
-#         raise ValueError('Invalid target comment id.')
-#     else:
-#         if _comment_id <= 0:
-#             raise ValueError('Invalid target comment id.')
-#         else:
-#             ret = cache_comment.CommentCache(_comment_id).exists()
-#             if ret:
-#                 return _comment_id
-#             else:
-#                 raise ValueError('Invalid target comment id.')
+def comment_id(value):
+    """
+    检查是否是评论id
+    :param value: 被检验的值
+    :return: comment_id
+    """
+    try:
+        _comment_id = int(value)
+    except Exception:
+        raise ValueError('Invalid target comment id.')
+    else:
+        if _comment_id <= 0:
+            raise ValueError('Invalid target comment id.')
+        else:
+            ret = cache_comment.CommentCache(_comment_id).exists()
+            if ret:
+                return _comment_id
+            else:
+                raise ValueError('Invalid target comment id.')
 
 
-# def channel_id(value):
-#     """
-#     检查是否是频道id
-#     :param value: 被检验的值
-#     :return: channel_id
-#     """
-#     try:
-#         _channel_id = int(value)
-#     except Exception:
-#         raise ValueError('Invalid channel id.')
-#     else:
-#         if _channel_id < 0:
-#             raise ValueError('Invalid channel id.')
-#         if _channel_id == 0:
-#             # Recommendation channel
-#             return _channel_id
-#         else:
-#             ret = cache_channel.AllChannelsCache.exists(_channel_id)
-#             if ret:
-#                 return _channel_id
-#             else:
-#                 raise ValueError('Invalid channel id.')
+def channel_id(value):
+    """
+    检查是否是频道id
+    :param value: 被检验的值
+    :return: channel_id
+    """
+    try:
+        _channel_id = int(value)
+    except Exception:
+        raise ValueError('Invalid channel id.')
+    else:
+        if _channel_id < 0:
+            raise ValueError('Invalid channel id.')
+        if _channel_id == 0:
+            # Recommendation channel
+            return _channel_id
+        else:
+            ret = cache_channel.AllChannelsCache.exists(_channel_id)
+            if ret:
+                return _channel_id
+            else:
+                raise ValueError('Invalid channel id.')
 
 
 def date(value):
@@ -214,4 +214,89 @@ def id_number(value):
         return value.upper()
     else:
         raise ValueError('Invalid id number.')
+
+
+def mis_account(account):
+    """
+    检验mis账号格式 规则: 字母、数字、下划线组成，字母开头，4-16位
+    :param account: str 被检验字符串
+    :return: account
+    """
+    if re.match(r'^[a-zA-z]\w{3,15}$', account):
+        return account
+    else:
+        raise ValueError('{} is not a valid account'.format(account))
+
+
+def mis_password(password):
+    """
+    检验mis密码格式 规则: 至少八个字符，至少一个字母和一个数字
+    :param password: str 被检验字符串
+    :return: password
+    """
+    if re.match(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$', password):
+        return password
+    else:
+        raise ValueError('{} is not a valid password'.format(password))
+
+
+def mis_group_id(value):
+    """
+    检查是否是group_id
+    :param value: 被检验的值
+    :return: group_id
+    """
+    try:
+        _group_id = int(value)
+    except Exception:
+        raise ValueError('Invalid target group id.')
+    else:
+        if _group_id <= 0:
+            raise ValueError('Invalid target group id.')
+        else:
+            from models.system import MisAdministratorGroup
+            ret = MisAdministratorGroup.query.filter_by(id=_group_id).first()
+            if ret:
+                return _group_id
+            else:
+                raise ValueError('Invalid target group id.')
+
+
+def mis_permission_id(value):
+    """
+    检查是否是permission_id
+    :param value: 被检验的值
+    :return: permission_id
+    """
+    try:
+        permission_id = int(value)
+    except Exception:
+        raise ValueError('Invalid target group id.')
+    else:
+        if permission_id < 0:
+            raise ValueError('Invalid target group id.')
+        elif permission_id == 0:
+            return permission_id
+        else:
+            from models.system import MisPermission
+            ret = MisPermission.query.filter_by(id=permission_id).first()
+            if ret:
+                return permission_id
+            else:
+                raise ValueError('Invalid target group id.')
+
+
+def statistics_type(value):
+    from models.statistics import StatisticsType
+    if value in StatisticsType.type_map:
+        return value
+    else:
+        raise ValueError('Invalid statistics type.')
+
+
+def statistics_size(value):
+    if value in ['day', 'hour', 'month']:
+        return value
+    else:
+        raise ValueError('Invalid statistics size. Choice in ("day", "hour")')
 

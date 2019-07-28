@@ -1,0 +1,11 @@
+# 搜索结果分页默认每页数量 下限
+DEFAULT_SEARCH_PER_PAGE_MIN = 10
+
+# 搜索结果页默认每页数量 上限
+DEFAULT_SEARCH_PER_PAGE_MAX = 50
+
+# 联想建议搜索此ES权重
+USER_KEYWORD_ES_SUGGEST_WEIGHT = 20
+
+# 用户搜索历史记录返回数量
+USER_SEARCH_HISTORY_RETRIEVE_LIMIT = 4

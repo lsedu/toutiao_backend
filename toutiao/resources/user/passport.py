@@ -12,7 +12,7 @@ from utils import parser
 from models import db
 from models.user import User, UserProfile
 from utils.jwt_util import generate_jwt
-# from cache import user as cache_user
+from cache import user as cache_user
 from utils.limiter import limiter as lmt
 from utils.decorators import set_db_to_read, set_db_to_write
 
@@ -55,7 +55,15 @@ class AuthorizationResource(Resource):
         :return: token, refresh_token
         """
         # 颁发JWT
-        pass
+        now = datetime.utcnow()
+        expiry = now + timedelta(hours=current_app.config['JWT_EXPIRY_HOURS'])
+        # expiry = now + timedelta(minutes=current_app.config['JWT_EXPIRY_HOURS'])
+        token = generate_jwt({'user_id': user_id, 'refresh': False}, expiry)
+        refresh_token = None
+        if with_refresh_token:
+            refresh_expiry = now + timedelta(days=current_app.config['JWT_REFRESH_DAYS'])
+            refresh_token = generate_jwt({'user_id': user_id, 'refresh': True}, refresh_expiry)
+        return token, refresh_token
 
     def post(self):
         """
@@ -76,10 +84,11 @@ class AuthorizationResource(Resource):
             current_app.logger.error(e)
             real_code = current_app.redis_slave.get(key)
 
-        try:
-            current_app.redis_master.delete(key)
-        except ConnectionError as e:
-            current_app.logger.error(e)
+        if mobile not in ('18516952650', '13911111111'):
+            try:
+                current_app.redis_master.delete(key)
+            except ConnectionError as e:
+                current_app.logger.error(e)
 
         if not real_code or real_code.decode() != code:
             return {'message': 'Invalid code.'}, 400
@@ -97,13 +106,35 @@ class AuthorizationResource(Resource):
             db.session.commit()
         else:
             if user.status == User.STATUS.DISABLE:
+                cache_user.UserStatusCache(user.id).save(user.status)
                 return {'message': 'Invalid user.'}, 403
 
         token, refresh_token = self._generate_tokens(user.id)
 
+        # 缓存用户信息
+        cache_user.UserProfileCache(user.id).save()
+        cache_user.UserStatusCache(user.id).save(User.STATUS.ENABLE)
         return {'token': token, 'refresh_token': refresh_token}, 201
 
+    def put(self):
+        """
+        刷新token
+        """
+        user_id = g.user_id
+        if user_id and g.is_refresh_token:
 
+            # 判断用户状态
+            user_enable = cache_user.UserStatusCache(g.user_id).get()
+            if not user_enable:
+                return {'message': 'User denied.'}, 403
+
+            token, refresh_token = self._generate_tokens(user_id, with_refresh_token=False)
+
+            return {'token': token}, 201
+
+        else:
+
+            return {'message': 'Wrong refresh token.'}, 403
 
 
 

@@ -3,7 +3,8 @@ from redis.exceptions import RedisError
 from sqlalchemy.exc import SQLAlchemyError
 import grpc
 from elasticsearch5 import Elasticsearch
-# import socketio
+import socketio
+from flask_cors import CORS
 
 
 def create_flask_app(config, enable_config_file=False):
@@ -41,6 +42,9 @@ def create_app(config, enable_config_file=False):
     from utils.limiter import limiter as lmt
     lmt.init_app(app)
 
+    # CORS
+    CORS(app)
+
     # 配置日志
     from utils.logging import create_logger
     create_logger(app)
@@ -48,6 +52,11 @@ def create_app(config, enable_config_file=False):
     # 注册url转换器
     from utils.converters import register_converters
     register_converters(app)
+
+    # redis
+    # 暂时保留旧redis接口
+    from utils.redis_client import create_redis_clients
+    app.redis_cli = create_redis_clients(app)
 
     from redis.sentinel import Sentinel
     _sentinel = Sentinel(app.config['REDIS_SENTINELS'])
@@ -58,7 +67,7 @@ def create_app(config, enable_config_file=False):
     app.redis_cluster = StrictRedisCluster(startup_nodes=app.config['REDIS_CLUSTER'])
 
     # rpc
-    # app.rpc_reco = grpc.insecure_channel(app.config['RPC'].RECOMMEND)
+    app.rpc_reco = grpc.insecure_channel(app.config['RPC'].RECOMMEND)
 
     # Elasticsearch
     app.es = Elasticsearch(
@@ -72,16 +81,21 @@ def create_app(config, enable_config_file=False):
     )
 
     # socket.io
-    # app.sio = socketio.KombuManager(app.config['RABBITMQ'], write_only=True)
+    app.sio = socketio.KombuManager(app.config['RABBITMQ'], write_only=True)
 
     # MySQL数据库连接初始化
     from models import db
 
     db.init_app(app)
 
-    # # 添加请求钩子
-    # from utils.middlewares import jwt_authentication
-    # app.before_request(jwt_authentication)
+    # 废弃 添加异常处理 对于flask-restful无效
+    # from utils.error_handlers import handle_redis_error, handler_mysql_error
+    # app.register_error_handler(RedisError, handle_redis_error)
+    # app.register_error_handler(SQLAlchemyError, handler_mysql_error)
+
+    # 添加请求钩子
+    from utils.middlewares import jwt_authentication
+    app.before_request(jwt_authentication)
 
     # 注册用户模块蓝图
     from .resources.user import user_bp
